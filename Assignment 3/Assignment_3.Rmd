@@ -1,0 +1,295 @@
+---
+title: 'Madison Wozniak: Assignment 3'
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+
+# Assignment 3
+
+You are asked to submit both the R Markdown file and its pdf output.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+<span style="color:red">**Q1.** </span> Write an if-else statement:
+
+1. If the number is greater than 0 and less than 10, print: "This number is between 0 and 10"
+
+2. If the number is greater than 10, print: "This number is greater than 10"
+
+3. If the number is less than 0, print: "This number is a negative number"
+
+4. Otherwise print: "This number is either 0 or 10"
+```{r}
+x<-12
+if(x>0){
+  print("This number is between 0 and 10")
+}else if(x<10){
+  print("This number is between 0 and 10")
+} else if(x>10){
+  print("This number is greater than 10")
+}else if(x<0){
+  print("This number is a negative number")
+}else{
+  print("This number is either 0 or 10")
+} 
+
+```
+
+
+<span style="color:red">**Q2.** </span> Write a function that gets a vector as its input and returns the mean and the standard deviation of the vector using the formula below:
+
+$$\left(\frac{\sum (x_i-\bar{x})^2}{n-1} \right)^{1/2}$$ 
+where $\bar{x}$ is the mean and n is the length of the vector.
+```{r}
+x<-c(1,5,4,9,1)
+ n<-length(x)
+((sum(x-mean(x))^2)/(n-1))^(1/2)
+sd_by_hand<-function(x){
+  
+  x_bar<-mean(x)
+  n<-length(x)
+  sd_<-(((sum(x-x_bar^2))/(n-1))^(1/2))
+  mean_<-mean(x)
+  c(mean_,sd_)
+    
+}
+sd_by_hand(c(1,5,4,9,1))
+```
+
+<span style="color:red">**Q3.** </span> 
+
+(a) Write a function that returns Euclidian Distance between two k-dimensional vectors:
+
+$$d=\sqrt{(x_1-y_1)^2+(x_2-y_2)^2+...+(x_k-y_k)^2}$$
+```{r}
+Euclidian_Distance<-function(x){
+  sqrt((sum(x-y))^2)
+}
+x<-c(4,5,7,3,56)
+y<-c(3,4,5,6,7)
+Euclidian_Distance(x)
+```
+
+(b) Write a function that will input the vectors x, y and p and will return the distance between two k-dimensional vectors:
+
+$$d_p(x,y)=((x_1-y_1)^p+(x_2-y_2)^p+...+(x_k-y_k)^p)^{1/p}$$
+
+Pick the default value for p as 2.
+```{r}
+distance_function<-function(x,y,p){
+  p<-2
+  x<-c(3,4,5,6,7)
+y<-c(1,2,3,4,5)
+x_k<-length(x)
+y_k<-length(y)
+(sum((x-y)^p))^(1/p)
+}
+distance_function(x,y,p)
+```
+
+<span style="color:red">**Q4.** </span>  Create a function altman_plot that takes two arguments, `x` and `y`, and plots the difference against the sum.
+```{r}
+altman_plot<-function(x,y){
+  plot(x+y,x-y)
+}
+x<-c(1,2,4,7,8)
+y<-c(3,5,2,9,1)
+altman_plot(x,y)
+```
+
+<span style="color:red">**Q5.** </span>  Write a function `compute_s_n_2` that for any 
+given n, computes the sum:
+
+$$1^2+2^2+3^2+4^2+...+(n-1)^2+n^2$$
+```{r}
+compute_s_n_2<-function(n){
+  x<-1:n
+  sum(x)
+}
+```
+
+(a) Find `compute_s_n_2(30)`.
+```{r}
+compute_s_n_2<-function(n){
+  x<-1:n
+  sum(x)
+}
+compute_s_n_2(30)
+```
+
+(b) Confirm that the formula for this sum is $=\frac{n(n+1)(2n+1)}{6}$.
+
+
+<span style="color:red">**Q6.** </span> Which of the following built-in datasets is tidy (you can pick more than one):
+
+(a) BJsales
+(b) EuStockMarkets
+(c) DNase
+(d) Formaldehyde
+(e) Orange
+(f) UCBAdmissions
+
+```{r}
+head(BJsales)
+# not tidy
+head(EuStockMarkets)
+#not tidy
+head(DNase)
+#tidy
+head(Formaldehyde)
+#tidy
+head(Orange)
+#tidy
+head(UCBAdmissions)
+#tidy
+```
+
+
+<span style="color:red">**Q7.** </span> Load the `dplyr` package and the `murders` dataset.
+```{r}
+library(tidyverse)
+library(dslabs)
+murders
+```
+(a) By using dplyr's `mutate` function, add a new column:
+
+`population_in_millions = population / 10^6`
+```{r}
+murders_added<-mutate(murders,population_in_millions=population/(10^6))
+murders_added
+```
+
+
+(b) If `rank(x)` gives you the ranks of `x` from lowest to highest, `rank(-x)` gives you the ranks from highest to lowest. Use the function mutate to add a column rank containing the rank, from highest to lowest murder rate. Make sure you redefine murders so we can keep using this variable.
+```{r}
+murders_ranked<-murders%>%mutate(murd_rank=rank(-(total/(population)*100000)))
+murders_ranked
+```
+
+(c) Select the columns `state`, `population` and give it a name `new_df`.
+```{r}
+library(tidyverse)
+new_df<-murders%>%
+  select(state,population)
+new_df
+```
+
+(d) Filter the observations with only `state== 'New York'` and call it as `murders_ny`.
+```{r}
+murders_ny<-murders%>%
+  filter(state=="New York")
+murders_ny
+```
+
+(e) Remove all the observations with `state=='Florida'` and call that dataframe as `murders_no_fl`.
+```{r}
+murders_no_fl<-murders%>%
+filter(state!="Florida")
+murders_no_fl
+```
+
+(f) Filter the murders dataset using `%in%` to filter the observations with `state=='New York'` or `state=='Texas'`.
+```{r}
+murders_tex_ny<-murders%>%
+  filter(state%in%c("New York"))
+murders_tex_ny
+```
+
+(g) Suppose you want to live in the Northeast or West and want the murder rate to be less than 1. How many options do you have?
+```{r}
+safe_northeast_west<-murders%>%
+  mutate(rate=(total/population*100000))%>%
+  filter((region%in%c("Northeast","West")&(rate<1)))
+safe_northeast_west
+```
+
+<span style="color:red">**Q8.** </span> Use a pipe to create a new data frame called my_states that considers only states in the Northeast or West which have a murder rate lower than 1, and contains only the state, rate and rank columns.
+
+```{r}
+my_states <- murders %>%
+ mutate(rate=(total/population*100000),murd_rank=rank(-(total/population*100000))) %>%
+filter((region%in%c("Northeast","West")&(rate<1))) %>%
+select(state,rate,murd_rank)
+my_states
+```
+
+<span style="color:red">**Q9.** </span> Install the NHANES package, load the data `NHANES`. 
+```{r}
+#install.packages("NHANES")
+library(NHANES)
+data(NHANES)
+```
+
+Observe that `NHANES` data has many missing values. 
+
+(a) Find the mean and the standard deviation of the variable `Age`. Remember the exclude the missing values. Hint: Add `na.rm = TRUE` inside the mean and the sd functions.
+```{r}
+mean(NHANES$Age,na.rm=TRUE)
+sd(NHANES$Age,na.rm=TRUE)
+```
+
+(b) First select the group as 20-to-29-year-old females. `AgeDecade` is a categorical variable with these ages. Note that the category is coded like " 20-29", with a space in front! What is the average and standard deviation of systolic blood pressure as saved in the `BPSysAve` variable? Save it to a variable called `ref`.
+```{r}
+filtered_age<-NHANES%>%
+  filter(AgeDecade==" 20-29")
+filtered_age
+ref<-filtered_age%>%
+  filter(BPSysAve!="NA")%>%
+  summarize(avg=mean(BPSysAve,na.rm=TRUE),standev=sd(BPSysAve,na.rm=TRUE))
+ref
+```
+
+*Hint:* Use `filter` and `summarize` and use the `na.rm = TRUE` argument when computing the average and standard deviation. You can also `filter` the NA values using `filter`.
+
+(c) Using a pipe, assign the average to a numeric variable `ref_avg`. Hint: Use the code similar to above and then `pull`.
+```{r}
+ref_avg<-filtered_age%>%
+  filter(BPSysAve!="NA")%>%
+  summarize(avg=mean(BPSysAve,na.rm=TRUE),standev=sd(BPSysAve,na.rm=TRUE))%>%
+  pull(avg)
+ref_avg
+```
+
+(d) Compute the average and standard deviation for females, but for each age group separately rather than a selected decade as in the earlier question. Note that the age groups are defined by AgeDecade. Hint: rather than filtering by age and gender, `filter` by *Gender* and then use `group_by`.
+```{r}
+filtered_female_age<-NHANES%>%
+  filter(Gender=="female")%>%
+  group_by(AgeDecade)%>%
+  filter(BPSysAve!="NA")%>%
+  summarize(avg=mean(BPSysAve,na.rm=TRUE),standev=sd(BPSysAve,na.rm=TRUE))
+filtered_female_age
+```
+
+(e) Repeat exercise (d) for males.
+```{r}
+filtered_male_age<-NHANES%>%
+  filter(Gender=="male")%>%
+  group_by(AgeDecade)%>%
+  filter(BPSysAve!="NA")%>%
+  summarize(avg=mean(BPSysAve,na.rm=TRUE),standev=sd(BPSysAve,na.rm=TRUE))
+filtered_male_age
+```
+
+(f) We can actually combine both summaries for exercises 4 and 5 into one line of code. This is because `group_by` permits us to group by more than one variable. Obtain one big summary table using `group_by(AgeDecade, Gender)`.
+```{r}
+combined_summary<-NHANES%>%
+group_by(AgeDecade,Gender)%>%
+  summarize(avg=mean(BPSysAve,na.rm=TRUE),standev=sd(BPSysAve,na.rm=TRUE))
+combined_summary
+```
+
+(g)  For males between the ages of 40-49, compare systolic blood pressure `BPSysAve` across race as reported in the Race1 variable. Order the resulting table from lowest to highest average systolic blood pressure.
+```{r}
+male_filter_age<-NHANES%>%
+  filter(AgeDecade==" 40-49")
+male_comparison<-male_filter_age%>%
+  summarize(Race1,BPSysAve)%>%
+  arrange(BPSysAve)
+male_comparison
+```
+
+

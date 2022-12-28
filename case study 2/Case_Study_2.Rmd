@@ -1,0 +1,102 @@
+---
+title: "Case Study 2"
+author: "Madison Wozniak"
+date: "OCtober 31st, 2021"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+
+<center> <h1>
+
+BSDS 100-Case Study 2</h1> </center>
+
+You are asked to submit both the R Markdown file and its pdf output.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<span style="color:red">**Q1.** </span> Install the packages `nycflights13`,  `maps`` and load the datasets: 
+
+```{r}
+library(tidyverse)
+library(maps)
+install.packages("maps")
+library(nycflights13)
+data(flights)
+data(airlines)
+data(airports)
+data(planes)
+data(weather)
+```
+Compute the average delay by destination, then join on the airports data frame so you can show the spatial distribution of delays. Here’s an easy way to draw a map of the United States:
+```{r}
+airports %>%
+  semi_join(flights, c("faa" = "dest")) %>%
+  ggplot(aes(lon, lat)) +
+    borders("state") +
+    geom_point() +
+    coord_quickmap()
+```
+
+a) Use the size or color of the points to display the average delay for each airport.
+```{r}
+airports %>%
+  semi_join(flights, c("faa" = "dest")) %>%
+  ggplot(aes(lon, lat)) +
+    borders("state") +
+    geom_point() +
+    coord_quickmap()
+
+```
+
+b) Add the location of the origin and destination (i.e. the lat and lon) to flights.
+
+c) Is there a relationship between the age of a plane and its delays?
+
+d) What weather conditions make it more likely to see a delay?
+
+e) What happened on June 13 2013? Display the spatial pattern of delays, and then use Google to cross-reference with the weather.
+
+
+<span style="color:red">**Q2.** </span>  Using the `tweets.csv` data that is available on Canvas
+
+(a) Identify all tweets with the word ‘flight’ in them.
+
+(b) How many tweets end in a question mark?
+
+(c) How many tweets have airport codes in them (assume any three subsequent capital letters are airport codes).
+```{r}
+install.packages("tweets.csv")
+str_match_all(tweets_1," [A-Z]{3} ")
+```
+
+
+(d) Identify all tweets with URLs in them.
+```{r}
+view_tweets<-str_extract_all(tweets_1,"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
+view_tweets
+```
+
+(e) Replace all instances of repeated exclamation points with a single exclamation point.
+```{r}
+replace_exclamations<-tweets_1%>%
+mutate(str_replace_all(tweets_1,"\\!+","\\!"))
+replace_exclamations
+```
+
+(f) Replace consecutive exclamation points, question marks, and periods with a single period, split the tweet on periods.
+```{r}
+replace_with_period<-tweets_1%>%
+mutate(period_line_break=(str_replace_all(tweets_1,"[!+|?+|.+]",".")))
+replace_with_period
+line_break<-replace_with_period%>%
+  mutate(str_split(tweets_1,". "))
+line_break
+```
+
+
+

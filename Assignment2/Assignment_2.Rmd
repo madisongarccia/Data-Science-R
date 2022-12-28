@@ -1,0 +1,222 @@
+---
+title: 'Assignment 2'
+author: "Madison Wozniak"
+date: "9/9/21"
+output:
+  pdf_document: default
+  html_document: default
+  word_document: default
+---
+
+
+<center> <h1>
+
+Assignment 2</h1> </center>
+
+You are asked to submit both the R Markdown file and its pdf output.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+<span style="color:red">**Q1.** </span> Using R, compute the following
+$$\frac{0.35-0.3}{\sqrt{\frac{0.2*(1-0.4)}{50}}}$$ 
+
+<span style="color:red">**Answer** </span>
+
+```{r}
+(0.35-0.3)/(sqrt((0.2*(1-0.4))/(50)))
+```
+
+<span style="color:red">**Q2.** </span> Define two variables`weight = [150, 160, 170, 120]` and `height = [5.2, 5.5, 5.8, 5.2]` and plot weight vs height.
+
+```{r}
+weight<-c(150,160,170,120)
+height<-c(5.2,5.5,5.8,5.2)
+plot(weight,height)
+```
+
+
+<span style="color:red">**Q3.** </span> Without running any code, predict the outcome of each line:
+
+x <- c(2, 3, 5, 7, 11, 13, 17, 19, 23, 29) 
+
+x[1:5]
+
+x<-c(1,2,3,4,5)
+
+x[c(1, 4)]
+
+Select rows 1 and 4
+
+x[-c(2, 5)]
+
+Remove rows 2 and 5
+
+ <pre><code><span style="color:blue"> x <- c(2, 3, 5, 7, 11, 13, 17, 19, 23, 29)  </span>
+
+ <span style="color:blue"> x[1:5]</span>
+
+ <span style="color:blue">  x[c(1, 4)]</span>
+
+ <span style="color:blue">  x[-c(2, 5)]</span> </code></pre>
+ 
+
+
+<span style="color:red">**Q4.** </span>Generate the matrix below
+
+\[
+\begin{bmatrix}
+   1       & 4 & 7 & 3 \\
+    2      & 4 & 3 &  8 \\
+    3      & 2 & 1 & 5
+\end{bmatrix}
+\]
+```{r}
+G<-matrix(c(1,2,3,4,4,2,7,3,1,3,8,5),3,4)
+G
+```
+
+(a) Report the 2nd and the 3rd row.
+```{r}
+G[c(2,3),]
+```
+
+(b) Report all columns except the 2nd one.
+```{r}
+G[,-2]
+```
+
+(c) Rename row and column names to your names of choice. 
+```{r}
+rownames(G)<-c("lions","tigers","bears")
+colnames(G)<-c("pink","purple","green","gold")
+```
+
+(d) Call the second and the third row using the names you defined.
+```{r}
+G[c("tigers","bears"),]
+```
+
+<span style="color:red">**Q5.** </span> Create a dataframe with four features (columns), first is called `no_bedrooms`, `location`, `age`, `price`. Here is the info for five houses:
+
+House 1: 4, 'Boston', 35, $500K
+
+House 2: 1, 'San Francisco', 55, $900K
+
+House 3: 4, 'Hartford', 87, $300K
+
+House 4: 3, 'Houston', 45, $280K
+
+House 5: 3, 'Seattle', 35, $850K
+
+```{r}
+no_bedrooms<-c(4,1,4,3,3)
+location<-c("Boston","San Francisco","Hartford","Houston","Seattle")
+age<-c(35,55,87,45,35)
+price<-c(500000,900000,300000,280000,850000)
+df<-data.frame(no_bedrooms,location,age,price)
+df
+```
+
+<span style="color:red">**Q6.** </span>Load the dataset that is already built-in data in R: `data(mtcars)`.
+
+(a) How many observations are there in this dataset?
+```{r}
+data(mtcars)
+mtcars
+str(mtcars)
+```
+32 observations
+(b) How many variables does this dataset have? What are the names of these variables?
+
+11 variables: `mpg,cyl,disp,hp,drat,wt,qsec,vs,am,gear,carb`
+
+(c) What are the classes of the variables?
+```{r}
+class(mtcars$mpg)
+class(mtcars$cyl)
+class(mtcars$disp)
+class(mtcars$hp)
+class(mtcars$drat)
+class(mtcars$wt)
+class(mtcars$qsec)
+```
+
+(d) What are the statistics of `mpg` such as mean, median, standard deviation.
+```{r}
+mean(mtcars$mpg)
+median(mtcars$mpg)
+sd(mtcars$mpg)
+```
+
+(e) How many observations are with `drat`> 3?
+```{r}
+log_drat<-(mtcars$drat>3)
+```
+
+<span style="color:red">**Q7.** </span> Start by loading the library and data:
+<pre><code>
+library(dslabs)
+data(murders) 
+</code></pre>
+```{r}
+library(dslabs)
+data(murders)
+murders
+```
+
+(a) Compute the per 100,000 murder rate for each state and store it in an object called `murder_rate`. Then use logical operators to create a logical vector named low that tells us which entries of murder_rate are lower than 1.
+```{r}
+murder_rate<-(murders$total)/(murders$population)*100000
+murder_rate
+low<-murder_rate<1
+low
+```
+
+(b) Now use the results from the previous exercise and the function which to determine the indices of murder_rate associated with values lower than 1.
+```{r}
+which(low)
+```
+
+(c) Use the results from the previous exercise to report the names of the states with murder rates lower than 1.
+```{r}
+murders$state[low]
+```
+
+(d) Now extend the code from exercises 2 and 3 to report the states in the Northeast with murder rates lower than 1. Hint: use the previously defined logical vector low and the logical operator &.
+```{r}
+murders$state[low&(murders$region=="Northeast")]
+```
+
+(e) In a previous exercise we computed the murder rate for each state and the average of these numbers. How many states are below the average?
+```{r}
+mean(murder_rate)
+murders$state[mean(murder_rate)]
+```
+
+(f) Use the match function to identify the states with abbreviations AK, MI, and IA. Hint: start by defining an index of the entries of murders$abb that match the three abbreviations, then use the [ operator to extract the states.
+```{r}
+murders$abb
+match(c("AK","MI","IA"),murders$abb)
+```
+
+(g) Use the %in% operator to create a logical vector that answers the question: which of the following are actual abbreviations: MA, ME, MI, MO, MU?
+```{r}
+murders$abb%in%c("MA","ME","MI","MO","MU")
+```
+
+(h) Extend the code you used in exercise 7 to report the one entry that is not an actual abbreviation. Hint: use the ! operator, which turns FALSE into TRUE and vice versa, then which to obtain an index.
+```{r}
+!murders$abb%in%c("MA","ME","MI","MO","MU")
+```
+
+(i)  Create a histogram of the state populations.
+```{r}
+hist(murders$population)
+```
+
+(j) Generate boxplots of the state populations by region.
+```{r}
+boxplot(population~region,data=murders)
+```
+

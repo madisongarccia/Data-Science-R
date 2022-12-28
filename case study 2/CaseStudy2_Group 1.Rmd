@@ -1,0 +1,189 @@
+---
+title: "CaseStudy2"
+author: "Phia Rau Halleen, Cassia,  Madison Wozniak"
+date: "November 2, 2021"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+<center> <h1>
+
+BSDS 100-Case Study 2</h1> </center>
+
+You are asked to submit both the R Markdown file and its pdf output.
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+<span style="color:red">**Q1.** </span> Install the packages `nycflights13`,  `maps`` and load the datasets: 
+
+```{r}
+library(tidyverse)
+library(maps)
+library(nycflights13)
+data(flights)
+data(airlines)
+data(airports)
+data(planes)
+data(weather)
+```
+Compute the average delay by destination, then join on the airports data frame so you can show the spatial distribution of delays. Here’s an easy way to draw a map of the United States:
+```{r}
+airports %>%
+  semi_join(flights, c("faa" = "dest")) %>%
+  ggplot(aes(lon, lat)) +
+    borders("state") +
+    geom_point() +
+    coord_quickmap()
+```
+
+a) Use the size or color of the points to display the average delay for each airport.
+```{r}
+library(dplyr)
+avg_delay <- flights%>%
+  group_by(dest)%>%
+  summarise(delay = mean(arr_delay, na.rm = TRUE))%>%
+  inner_join(airports, by = c(dest = "faa"))
+
+avg_delay %>%
+  ggplot(aes(x = lon, y = lat, colour = delay)) + borders("state")  +   geom_point() + coord_quickmap() + scale_color_viridis_b()
+```
+
+
+b) Add the location of the origin and destination (i.e. the lat and lon) to flights.
+```{r}
+location <- airports%>%
+  select(faa,lat,lon)
+
+flights%>%
+  select(year: day, hour, origin, dest)%>%
+  left_join(location, by = c("origin" = "faa"))%>%
+  left_join(location, by = c("dest" = "faa"))
+```
+
+
+c) Is there a relationship between the age of a plane and its delays?
+```{r}
+plane_age_delay <- inner_join(flights, select(planes, tailnum, plane_year = year), by = "tailnum") %>%
+  mutate(age = year - plane_year) %>%
+  filter(!is.na(age)) %>%
+  mutate(age = if_else(age > 25, 25L, age)) %>%
+  group_by(age) %>%
+  summarise(dep_delay_mean = mean(dep_delay, na.rm = TRUE), 
+            dep_delay_sd = sd(dep_delay, na.rm = TRUE), 
+            arr_delay_mean = mean(arr_delay, na.rm = TRUE), 
+            arr_delay_sd = sd(arr_delay, na.rm = TRUE),  
+            n_arr_delay = sum(!is.na(arr_delay)), 
+            n_dep_delay = sum(!is.na(dep_delay)))
+
+ggplot(plane_age_delay, aes(x = age, y = dep_delay_mean)) +
+  geom_point() +
+  scale_x_continuous("Age of plane (years)", breaks = seq(0, 30, by = 10)) +
+  scale_y_continuous("Mean Departure Delay (minutes)")
+```
+There is a relationship between the age of a plane and its delays.
+
+
+d) What weather conditions make it more likely to see a delay?
+```{r}
+flight_weather <- flights %>% 
+  inner_join(weather, by = c("origin" = "origin", "year" = "year", 
+                             "month" = "month", "day" = "day", 
+                             "hour" = "hour"))
+flight_weather%>%
+  group_by(precip)%>%
+  summarise(delay = mean(dep_delay, na.rm = TRUE))%>%
+  ggplot(aes(x = precip, y = delay)) +
+  geom_line() + geom_point()
+
+flight_weather %>%
+  ungroup() %>%
+  mutate(visib_cat = cut_interval(visib, n = 10)) %>%
+  group_by(visib_cat) %>%
+  summarise(dep_delay = mean(dep_delay, na.rm = TRUE)) %>%
+  ggplot(aes(x = visib_cat, y = dep_delay)) + 
+  geom_point()
+```
+
+
+e) What happened on June 13 2013? Display the spatial pattern of delays, and then use Google to cross-reference with the weather.
+```{r}
+nycflights13::flights
+June13_2013 <- flights%>%
+  filter(year == 2013, month == 6, day == 13)%>%
+  group_by(dest)%>%
+  summarize(dep_delay = mean(arr_delay, na.rm = TRUE))%>%
+  inner_join(airports, by = c("dest" = "faa"))%>%
+ggplot(aes(x=lon,y=lat,))
+
+June13_2013b <- flights%>%
+  filter(year == 2013, month == 6, day == 13)%>%
+  group_by(dest)%>%
+  summarize(dep_delay = mean(arr_delay, na.rm = TRUE))%>%
+  inner_join(airports, by = c("dest" = "faa"))%>%
+  ggplot(aes(x=lon, y=lat, size=dep_delay, color=dep_delay)) +
+  borders("state") +
+  geom_point() +
+  coord_quickmap() +
+  scale_color_viridis_b()
+
+June13_2013b
+```
+
+
+
+
+<span style="color:red">**Q2.** </span>  Using the `tweets.csv` data that is available on Canvas
+
+(a) Identify all tweets with the word ‘flight’ in them.
+```{r}
+library(readxl)
+library(htmlwidgets)
+flight_tweets <- read.csv("tweets-1.csv", header=FALSE)
+head(flight_tweets)
+flight_tweets%>%
+  filter(str_detect(V1,"flight")) 
+```
+There are three tweets with a question mark. 
+(b) How many tweets end in a question mark?
+```{r}
+
+flight_tweets%>%
+  filter(str_detect(V1,"\\?$"))
+
+#the question mark is taken as a special expression, so we used the backslash, 
+#then we use the "$" to specify the end of the string. 
+
+```
+There are two tweets with a question mark. 
+
+(c) How many tweets have airport codes in them (assume any three subsequent capital letters are airport codes).
+```{r}
+str_match_all(tweets_1," [A-Z]{3} ")
+```
+There are 6 tweets that contain airport codes.
+
+(d) Identify all tweets with URLs in them.
+```{r}
+view_tweets<-str_extract_all(tweets_1,"http[s]?://(?:[a-zA-Z]|[0-9]|[$-_@.&+]|[!*\\(\\),]|(?:%[0-9a-fA-F][0-9a-fA-F]))+")
+view_tweets
+```
+There are 3 URLS across 2 tweets.
+
+(e) Replace all instances of repeated exclamation points with a single exclamation point.
+```{r}
+replace_exclamations<-tweets_1%>%
+mutate(str_replace_all(tweets_1,"\\!+","\\!"))
+replace_exclamations
+```
+
+(f) Replace consecutive exclamation points, question marks, and periods with a single period, split the tweet on periods.
+```{r}
+replace_with_period<-tweets_1%>%
+mutate(period_line_break=(str_replace_all(tweets_1,"[!+|?+|.+]",".")))
+line_break<-replace_with_period%>%
+  mutate(str_split(tweets_1,". "))
+line_break
+```

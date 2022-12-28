@@ -1,0 +1,184 @@
+---
+title: "Group 1_Case Study"
+author: "Phia Rau Halleen, Cassia, and Madison Wozniak"
+date: "9/26/2021"
+output: pdf_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+#1.How many passengers are in our passenger list?
+```{r}
+train<-read.csv("train.csv")
+train
+str(train)
+```
+##There were 891 passengers represented in this dataset.
+
+#2.Are there any missing values?
+```{r}
+is.na(train)
+sum(is.na(train))
+```
+##There are 866 missing values in this dataset. 
+#3.What is the overall survival rate?
+```{r}
+train
+head(train)
+survival_rate<-sum(train$Survived)/sum(train$PassengerId)*100000
+survival_rate
+```
+##The overall passenger survival rate is 86.062%
+#4.How many male passengers were onboard?
+```{r}
+male_passengers<-train%>%
+  filter(Sex=="male")
+male_passengers
+summary(male_passengers)
+```
+##There were 577 males on board. 
+#5.How many female passengers were onboard?
+
+```{r}
+female_passengers<-train%>%
+  filter(Sex=="female")
+female_passengers
+summary(female_passengers)
+```
+##There were 314 female passengers on board.
+#Question 6.What is the overall survival rate of male passengers?
+```{r}
+train
+head(train)
+
+str(train)
+male_passengers<-train%>%
+  filter(Sex=="male")
+male_passengers_number<-nrow(male_passengers)
+
+male_survival_rate1<-male_passengers%>%
+  summarize(sum(Survived, na.rm = TRUE))
+male_survival_rate1
+
+sum(male_passengers$Survived)/(male_passengers_number)*100
+
+```
+##The survival rate for male passengers was 18.89%
+
+#Question 7.What is the overall survival rate of female passengers?
+```{r}
+str(train)
+female_passengers<-train%>%
+  filter(Sex=="female")
+female_passengers_number<-nrow(female_passengers)
+
+female_survival_rate1<-male_passengers%>%
+  summarize(sum(Survived, na.rm = TRUE))
+female_survival_rate1
+
+sum(female_passengers$Survived)/(female_passengers_number)*100
+```
+##The survival rate for female passengers was 74.20%. 
+#Question 8a.What is the average age of all passengers onboard?
+```{r}
+train
+head(train)
+str(train)
+avg_passenger_age<-mean(train$Age,na.rm = TRUE)
+avg_passenger_age
+
+```
+##The average age of passengers on board was 29.69
+#Question 8b How did you calculate the average age?
+##We calculated the average age by using na.rm to remove NA values, and applied 
+## mean to find the average age of passengers. 
+
+#Question 8c Note that some of the passengers do not have an age value. How did you deal with this?
+##Because there were some passengers that did not have an age value, these were not included in average age. opt. 2: We filtered out the passengers that did not have an age listed.
+
+#Question 9.What is the average age of passengers who survived? 
+```{r}
+avg_survival_age<-mean(train$Survived, na.rm = TRUE)
+avg_survival_age
+
+survived_passengers<-train%>%
+  filter(Survived==1)%>%
+  summarize(mean(Age, na.rm = TRUE))
+survived_passengers
+```
+##The average age of passengers that did survive is 28.34
+
+#Question 10. What is the average age of passengers who did not survive?
+```{r}
+head(train)
+
+dead_passengers<-train%>%
+  filter(Survived==0)%>%
+  summarize(mean(Age, na.rm = TRUE))
+dead_passengers
+
+```
+##The average age of passengers who did not survive is 30.62
+
+#Question 11. How many passengers are in each of the three classes of service (e.g.First, Second, and Third?)
+```{r}
+passenger_class_1<-train%>%
+  filter(Pclass=="1")
+passenger_class_1
+summary(passenger_class_1)
+```
+##There are 216 passengers in the 1st class
+```{r}
+passenger_class_2<-train%>%
+  filter(Pclass=="2")
+passenger_class_2
+summary(passenger_class_2)
+```
+##There were 184 passengers in the 2nd class. 
+```{r}
+passenger_class_3<-train%>%
+  filter(Pclass=="3")
+passenger_class_3
+summary(passenger_class_3)
+```
+##There were 491 passengers in the 3rd class. 
+#Question 12.What is the survival rate for passengers in each of the three classes of service?
+```{r}
+class_1_survival_rate<-sum(passenger_class_1$Survived)/nrow(passenger_class_1)*100
+class_1_survival_rate
+
+```
+##The survival rate for 1st class passengers was 62.962%. 
+##Class 2 
+```{r}
+class_2_survival_rate<-sum(passenger_class_2$Survived)/nrow(passenger_class_2)*100
+class_2_survival_rate
+```
+##The survival rate for 2nd class passengers was 47.282%
+##Class 3
+```{r}
+class_3_survival_rate<-sum(passenger_class_3$Survived)/nrow(passenger_class_3)*100
+class_3_survival_rate
+```
+##The survival rate for 3rd class passengers was 24.236%
+#13.Based on your data analysis, what can you conclude?
+```{r}
+summary(train)
+```
+##Based on the above data analysis, more first class passengers survived compared to 2nd and 3rd class passengers. 2nd class passengers survived at nearly double the rate of 3rd class passengers. This shows that 1st class passengers were likely prioritized more than passengers in the 2nd or 3rd class. 
+
+#14.Use visualization techniques for few variables of interest. Specially, visualize association of different variables with survival rate.
+```{r}
+boxplot(Fare~as.factor(Sex),data=train)
+```
+##What this boxplot shows is the fare amount paid related to the gender of passengers. It shows us relevant data in terms of both the average fare for females and the minimum/maximum fare for females are both slightly higher amounts than the male minimum,maximum, and mean. The plots at the top of the boxplot diagram show two outliers from the overall data, at a fare amount of 500 dollars. 
+```{r}
+hist(train$Fare)
+```
+##The histogram indicates that the most frequent ticket fare for all passengers who paid is 50 dollars with the second most frequent amount being up to 100 dollars. 
+```{r}
+ plot(train$Pclass,train$Age)
+```
+##The plot shows that the majority of third class were younger adults ranging from children to age 50 with only a few older passengers. The majority of older passengers clusters in first class with the highest density of plots above age 50.The second class grouping has more middle-aged passengers with the highest age density between 20 and 40 years old. 
+

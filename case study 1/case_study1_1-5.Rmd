@@ -1,0 +1,58 @@
+---
+title: "Case Study 1 Answers"
+author: "Madison Wozniak"
+date: "9/23/2021"
+output: pdf_document
+---
+
+Q1: How many passengers are in our passenger list?
+```{r}
+train
+str(train)
+```
+There are 891 passengers
+
+Q2: Are there any missing values?
+```{r}
+is.na(train)
+sum(is.na(train))
+```
+There are 866 missing values
+
+Q3: What is the overall survival rate?
+```{r}
+survival_rate<-(train$Survived/train$PassengerID)
+survival_rate
+
+```
+
+
+Q4: How many male passengers were onboard?
+```{r}
+
+```
+
+
+Q5: How many female passengers were onboard?
+```{r}
+survival_rate<-sum(train$Survived)/sum(train$PassengerId)
+
+male_survival_rate<-sum(train$Survived-(train$Sex["male"]))/sum(train$PassengerId)
+survival_rate
+survival_rate
+class(survival_rate)
+library(tidyverse)
+mean(train$Age,na.rm=TRUE)
+
+male_survival_rate <- train %>%
+ mutate(rate=sum(train$Survived-train$Sex["male"])/sum(train$PassengerId)*100000) %>%
+filter(train,rate==TRUE) %>%
+  select(train$Sex%in%"male")
+male_survival_rate
+sum(survival_rate["male"])
+
+summary(male_survival_rate)
+
+```
+
+
